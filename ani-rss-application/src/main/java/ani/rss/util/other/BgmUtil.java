@@ -767,10 +767,14 @@ public class BgmUtil {
      * @return
      */
     public static Integer getEps(BgmInfo bgmInfo) {
-        int eps = bgmInfo.getEps();
+        int eps = ObjectUtil.defaultIfNull(bgmInfo.getEps(), 0);
+        int totalEpisodes = ObjectUtil.defaultIfNull(bgmInfo.getTotalEpisodes(), 0);
+        if (eps < 1 && totalEpisodes > 0) {
+            eps = totalEpisodes;
+        }
         String subjectId = bgmInfo.getId();
         if (eps < 1) {
-            return 0;
+            log.debug("bgm eps 无效, 将尝试使用 episodes 列表进行兜底统计, subjectId: {}", subjectId);
         }
         try {
             int size = BgmUtil.getEpisodes(subjectId, 0).size();
